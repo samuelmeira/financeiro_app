@@ -1,5 +1,4 @@
 defmodule FinanceiroAppWeb.DashboardLive do
-  alias FinanceiroApp.Dashboard
   use FinanceiroAppWeb, :live_view
 
   alias FinanceiroApp.Importer
