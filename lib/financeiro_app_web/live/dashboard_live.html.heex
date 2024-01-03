@@ -1,0 +1,92 @@
+<div class="flex flex-col items-center justify-center container">
+  <div
+    class="flex flex-col w-2/3 py-24 border-dashed border-2 rounded-lg flex justify-center items-center"
+    phx-drop-target={@uploads.sheet.ref}
+  >
+    <form
+      id="upload-form"
+      phx-submit="save"
+      phx-change="validate"
+      class="flex flex-col items-center justify-center gap-4"
+    >
+      <.icon name="hero-document-arrow-up" />
+      <label class="flex flex-col gap-4 text-sm font-semibold leading-6 text-zinc-800">
+        Arraste ou selecione o arquivo desejado!
+        <.live_file_input
+          upload={@uploads.sheet}
+          class="file-input file-input-bordered file-input-primary w-full max-w-xs"
+        />
+      </label>
+      <button
+        :if={@uploads.sheet.entries |> Enum.any?()}
+        type="submit"
+        class="btn btn-primary btn-outline"
+      >
+        Enviar
+      </button>
+    </form>
+    <section class="mt-16">
+      <%!-- render each sheet entry --%>
+      <%= for entry <- @uploads.sheet.entries do %>
+        <article class="upload-entry">
+          <figure class="flex gap-4 items-center">
+            <.live_img_preview entry={entry} />
+            <figcaption><%= entry.client_name %></figcaption>
+          </figure>
+
+          <%!-- entry.progress will update automatically for in-flight entries --%>
+          <progress value={entry.progress} max="100"><%= entry.progress %>%</progress>
+
+          <%!-- a regular click event whose handler will invoke Phoenix.LiveView.cancel_upload/3 --%>
+          <button
+            type="button"
+            phx-click="cancel-upload"
+            phx-value-ref={entry.ref}
+            aria-label="cancel"
+          >
+            &times;
+          </button>
+
+          <%!-- Phoenix.Component.upload_errors/2 returns a list of error atoms --%>
+          <%= for err <- upload_errors(@uploads.sheet, entry) do %>
+            <p class="alert alert-danger"><%= error_to_string(err) %></p>
+          <% end %>
+        </article>
+      <% end %>
+
+      <%!-- Phoenix.Component.upload_errors/1 returns a list of error atoms --%>
+      <%= for err <- upload_errors(@uploads.sheet) do %>
+        <p class="alert alert-danger"><%= error_to_string(err) %></p>
+      <% end %>
+    </section>
+  </div>
+  <section
+    :if={@subscriptions |> Enum.any?()}
+    class="mt-16 container gap-4 flex flex-col items-center"
+  >
+    <h1>Assinaturas</h1>
+    <%= for subscription <- @subscriptions do %>
+      <div class="px-4 rounded-lg justify-between shadow-md flex items-center w-2/3 h-24 bg-neutral-100 hover:bg-neutral-300">
+        <span class="text-base font-bold"><%= Enum.at(subscription, 0) %></span>
+        <span class=" text-base font-bold">
+          R$ <%= Enum.at(subscription, 5) |> get_value() %>
+        </span>
+      </div>
+    <% end %>
+  </section>
+  <section :if={@bills |> Enum.any?()} class="mt-16 container gap-4 flex flex-col items-center">
+    <h1>Parcelas</h1>
+    <%= for bill <- @bills  do %>
+      <div class="px-4 rounded-lg justify-between shadow-md flex items-center w-2/3 h-24 bg-neutral-100 hover:bg-neutral-300">
+        <span class="text-base font-bold"><%= Enum.at(bill, 0) %></span>
+        <span class=" text-base font-bold">
+          R$ <%= Enum.at(bill, 5) |> get_value() %>
+        </span>
+      </div>
+    <% end %>
+    <div>
+      <h1>Próximas Parcelas</h1>
+    </div>
+  </section>
+
+</div>

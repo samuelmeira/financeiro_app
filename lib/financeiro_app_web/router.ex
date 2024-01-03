@@ -18,6 +18,8 @@ defmodule FinanceiroAppWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+
+    live "/dashboard", DashboardLive
   end
 
   # Other scopes may use custom stacks.
