@@ -8,6 +8,8 @@ defmodule FinanceiroApp.Accounts.User do
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
 
+    has_many :purchases, FinanceiroApp.Dashboard.Purchase
+    has_many :subscriptions, FinanceiroApp.Dashboard.Subscription
     timestamps(type: :utc_datetime)
   end
 
