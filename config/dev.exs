@@ -5,7 +5,7 @@ config :financeiro_app, FinanceiroApp.Repo,
   username: "postgres",
   password: "postgres",
   hostname: "localhost",
-  database: "financeiro_app_dev",
+  database: "financial_db",
   stacktrace: true,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
