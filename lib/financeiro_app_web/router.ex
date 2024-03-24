@@ -17,14 +17,6 @@ defmodule FinanceiroAppWeb.Router do
     plug :accepts, ["json"]
   end
 
-  scope "/", FinanceiroAppWeb do
-    pipe_through :browser
-
-    get "/", PageController, :home
-
-    live "/dashboard", DashboardLive
-  end
-
   # Other scopes may use custom stacks.
   # scope "/api", FinanceiroAppWeb do
   #   pipe_through :api
@@ -65,7 +57,7 @@ defmodule FinanceiroAppWeb.Router do
 
   scope "/", FinanceiroAppWeb do
     pipe_through [:browser, :require_authenticated_user]
-
+    live "/", DashboardLive
     live_session :require_authenticated_user,
       on_mount: [{FinanceiroAppWeb.UserAuth, :ensure_authenticated}] do
       live "/users/settings", UserSettingsLive, :edit
