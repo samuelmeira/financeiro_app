@@ -1,10 +1,20 @@
 defmodule FinanceiroAppWeb.DashboardLive do
+  alias FinanceiroApp.Repo
+  alias FinanceiroApp.Dashboard.Subscription
   use FinanceiroAppWeb, :live_view
 
   alias FinanceiroApp.Importer
+  alias FinanceiroApp.Accounts
+
 
   @impl Phoenix.LiveView
-  def mount(_params, _session, socket) do
+  def mount(_params, %{"user_token" => user_token} = _session, socket) do
+
+    socket =
+      assign_new(socket, :current_user, fn ->
+        Accounts.get_user_by_session_token(user_token)
+      end)
+
     {:ok,
      socket
      |> assign(:uploaded_files, [])
@@ -35,13 +45,17 @@ defmodule FinanceiroAppWeb.DashboardLive do
 
     {subscriptions, bills} =
       uploaded_files
-      |> Importer.import_data()
+      |> Importer.import_data(socket.assigns.current_user)
 
-    socket =
-      socket
-      |> update(:uploaded_files, &(&1 ++ uploaded_files))
-      |> update(:subscriptions, &(&1 ++ subscriptions))
-      |> update(:bills, &(&1 ++ bills))
+
+    IO.inspect(subscriptions, label: "subscriptions")
+    IO.inspect(bills, label: "bills")
+
+    # socket =
+    #   socket
+    #   |> update(:uploaded_files, &(&1 ++ uploaded_files))
+    #   |> update(:subscriptions, &(&1 ++ subscriptions))
+    #   |> update(:bills, &(&1 ++ bills))
 
     {:noreply, update(socket, :uploaded_files, &(&1 ++ uploaded_files))}
   end

@@ -1,11 +1,13 @@
 defmodule FinanceiroApp.Dashboard.Installment do
   use Ecto.Schema
   import Ecto.Changeset
+  alias FinanceiroApp.Dashboard.Purchase
 
   schema "installments" do
     field :value, :decimal
     field :date, :utc_datetime
-    field :purchase_id, :id
+
+    belongs_to(:purchase, Purchase)
 
     timestamps(type: :utc_datetime)
   end
@@ -13,7 +15,7 @@ defmodule FinanceiroApp.Dashboard.Installment do
   @doc false
   def changeset(installment, attrs) do
     installment
-    |> cast(attrs, [:date, :value])
-    |> validate_required([:date, :value])
+    |> cast(attrs, [:date, :value, :purchase_id])
+    |> validate_required([:date, :value, :purchase_id])
   end
 end
